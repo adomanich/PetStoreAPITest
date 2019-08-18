@@ -10,7 +10,7 @@ import static io.restassured.RestAssured.given;
 public class PetServices extends BaseSetUp {
 
 
-    public PetServices (){
+    public PetServices() {
         super(ClassForPath.petUrl);
     }
 
@@ -27,7 +27,7 @@ public class PetServices extends BaseSetUp {
 
     public Response getPetByStatus(String status) {
         return given(createRequest())
-                .get("findByStatus?status=" + status);
+                .get(ClassForPath.petFindByStatusPath + status);
     }
 
     protected Response updatePet(PetModel pet) {

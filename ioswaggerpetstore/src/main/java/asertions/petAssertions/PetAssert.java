@@ -3,97 +3,76 @@ package asertions.petAssertions;
 import models.CategoryModel;
 import models.PetModel;
 import models.TagsItemsModel;
-import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.SoftAssertions;
 
 import java.util.List;
-import java.util.Objects;
 
-public class PetAssert extends AbstractAssert<PetAssert, PetModel> {
-    private String errorMessage;
 
-    public PetAssert(PetModel actual) {
-        super(actual, PetAssert.class);
-    }
+public class PetAssert {
 
-    public static PetAssert assertThat(PetModel actual) {
-        return new PetAssert(actual);
+    private static PetModel actual;
+    SoftAssertions softAssertions = new SoftAssertions();
+
+
+    public static PetAssert assertThat(PetModel petModel) {
+        actual = petModel;
+        return new PetAssert();
     }
 
     public PetAssert hasId(int id) {
-        isNotNull();
-        errorMessage = "Expecting id to be:<%s> but was: <%s>";
+
         int actualId = actual.getId();
-        if (actualId != id) {
-            failWithMessage(errorMessage, id, actualId);
-        }
+        softAssertions.assertThat(actualId).as("Id").isEqualTo(id);
         return this;
+
     }
 
-    public PetAssert hasName(String name) {
-        isNotNull();
-        errorMessage = "Expecting name to be:<%s> but was: <%s>";
+    public void hasName(String name) {
         String actualName = actual.getName();
-        if (!Objects.equals(actualName, name)) {
-            failWithMessage(errorMessage, name, actualName);
-        }
-        return this;
+        softAssertions.assertThat(actualName).as("Name").isEqualTo(name);
     }
 
-    public PetAssert hasCategory(CategoryModel categoryModel) {
-        isNotNull();
-        errorMessage = "Expecting category to be:<%s> but was: <%s>";
+    public void hasCategory(CategoryModel categoryModel) {
+
         CategoryModel actualCategory = actual.getCategory();
-        if (!actualCategory.equals(categoryModel)) {
-            failWithMessage(errorMessage, categoryModel, actualCategory);
-        }
-        return this;
+        CategoryAssert.assertThat(actualCategory).isEqualTo(categoryModel);
+
+
     }
 
-    public PetAssert hasListOfPhotoUrls(List<String> photooUrls) {
+    public void hasListOfPhotoUrls(List<String> photooUrls) {
 
-        isNotNull();
-        errorMessage = "Expecting photoUrls to be:<%s> but was:<%s>";
         List<String> actualPhotoUrls = actual.getPhotoUrls();
-        if (!actualPhotoUrls.equals(photooUrls)) {
-            failWithMessage(errorMessage, photooUrls, actualPhotoUrls);
-        }
+        softAssertions.assertThat(actualPhotoUrls).as("PhotoUrls").isEqualTo(photooUrls);
 
-        return this;
 
     }
 
-    public PetAssert hasListOfTagsItems(List<TagsItemsModel> tagsItemsModelList) {
-        isNotNull();
-        errorMessage = "Expecting tagsItemsModelUrls to be:<%s> but was: <%s>";
+    public void hasListOfTagsItems(List<TagsItemsModel> tagsItemsModelList) {
+
+
         List<TagsItemsModel> actualTagsItemsList = actual.getTagsItems();
         for (int i = 0; i < actualTagsItemsList.size(); i++) {
-            if (!actualTagsItemsList.get(i).equals(tagsItemsModelList.get(i))) {
-                failWithMessage(errorMessage, tagsItemsModelList, actualTagsItemsList);
-            }
+            TagsItemsAssert.assertThat(actualTagsItemsList.get(i)).isEqualTo(tagsItemsModelList.get(i));
         }
-        return this;
     }
 
 
-    public PetAssert hasStatus(String status) {
-        isNotNull();
-        errorMessage = "Expecting status to be: <%s> but was: <%s>";
+    public void hasStatus(String status) {
         String actualStatus = actual.getStatus();
-        if (!actualStatus.equals(status)) {
-            failWithMessage(errorMessage, status, actualStatus);
-        }
-        return this;
+        softAssertions.assertThat(actualStatus).as("Status").isEqualTo(status);
+
     }
 
 
     public PetAssert isEqualTo(PetModel petModel) {
         hasId(petModel.getId());
-        hasCategory(petModel.getCategory());
         hasName(petModel.getName());
+        hasCategory(petModel.getCategory());
         hasListOfPhotoUrls(petModel.getPhotoUrls());
         hasListOfTagsItems(petModel.getTagsItems());
         hasStatus(petModel.getStatus());
-
+        softAssertions.assertAll();
         return this;
     }
 }

@@ -1,62 +1,59 @@
 package io.swagger.petstore;
 
 import asertions.petAssertions.PetAssert;
-import business.PetCreate;
-import business.PetUpdate;
-import io.restassured.response.Response;
+import business.petBL.PetCreateBL;
+import business.petBL.PetUpdateBL;
 import client.pet.PetServices;
+import io.restassured.response.Response;
 import models.PetModel;
-import org.junit.jupiter.api.*;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.testng.Assert.assertEquals;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+
 public class PetStoreTest extends PetServices {
     private static PetModel testPetOne;
-    //private static PetAssert petAssert;
     private PetModel testPetTwo;
 
 
-    @BeforeAll
+    @BeforeSuite
     public static void setUp() {
         System.out.println("Before all");
-        testPetOne = new PetCreate().createPet();
+        testPetOne = new PetCreateBL().createPet();
     }
 
-    @Test
-    @Order(1)
+    @Test(priority = 1)
     public void addNewPetTest() {
         Response response = addNewPet(testPetOne);
-        PetModel petone = response.getBody().as(PetModel.class);
-        PetAssert.assertThat(petone).isEqualTo(testPetOne);
+        PetAssert.assertThat(response.getBody().as(PetModel.class)).isEqualTo(new PetCreateBL().createPet());
+
     }
 
-    @Test
-    @Order(2)
+    @Test(priority = 2)
     public void getPetTest() {
         Response response = getPetByID(testPetOne.getId());
         assertEquals(200, response.getStatusCode());
     }
 
-    @Test
-    @Order(5)
+    @Test(priority = 5)
     public void getPetByStatusTest() {
         Response response = getPetByStatus(PetModel.Status.PENDING.getValue());
         assertEquals(200, response.getStatusCode());
 
     }
 
-    @Test
-    @Order(3)
+    @Test(priority = 3)
     public void updatePetTest() {
         System.out.println(" updatePetTest");
-        testPetTwo = new PetUpdate().doUpdate(testPetOne.getId());
+        testPetTwo = new PetUpdateBL().doUpdate(testPetOne.getId());
         Response response = updatePet(testPetTwo);
-        assertEquals(200, response.getStatusCode());
+        PetAssert.assertThat(response.getBody().as(PetModel.class))
+                .hasId(testPetTwo.getId())
+                .hasCategory(testPetTwo.getCategory());
     }
 
-    @Test
-    @Order(4)
+    @Test(priority = 4)
     public void deletePetTest() {
         System.out.println(" deletePetTest");
         Response response = deletePet(testPetOne.getId());
