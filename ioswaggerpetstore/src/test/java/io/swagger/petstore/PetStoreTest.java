@@ -6,6 +6,7 @@ import business.petBL.PetUpdateBL;
 import client.pet.PetServices;
 import io.restassured.response.Response;
 import models.PetModel;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -26,7 +27,8 @@ public class PetStoreTest extends PetServices {
     @Test(priority = 1)
     public void addNewPetTest() {
         Response response = addNewPet(testPetOne);
-        PetAssert.assertThat(response.getBody().as(PetModel.class)).isEqualTo(new PetCreateBL().createPet());
+        PetModel newPet = new PetCreateBL().createPet();
+        PetAssert.assertThat(response.getBody().as(PetModel.class)).isEqualTo(newPet);
 
     }
 
@@ -51,6 +53,7 @@ public class PetStoreTest extends PetServices {
         PetAssert.assertThat(response.getBody().as(PetModel.class))
                 .hasId(testPetTwo.getId())
                 .hasCategory(testPetTwo.getCategory());
+
     }
 
     @Test(priority = 4)

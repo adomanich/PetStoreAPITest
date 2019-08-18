@@ -27,41 +27,43 @@ public class PetAssert {
 
     }
 
-    public void hasName(String name) {
+    public PetAssert hasName(String name) {
         String actualName = actual.getName();
         softAssertions.assertThat(actualName).as("Name").isEqualTo(name);
+        return this;
     }
 
-    public void hasCategory(CategoryModel categoryModel) {
+    public PetAssert hasCategory(CategoryModel categoryModel) {
 
         CategoryModel actualCategory = actual.getCategory();
         CategoryAssert.assertThat(actualCategory).isEqualTo(categoryModel);
 
-
+        return this;
     }
 
-    public void hasListOfPhotoUrls(List<String> photooUrls) {
+    public PetAssert hasListOfPhotoUrls(List<String> photooUrls) {
 
         List<String> actualPhotoUrls = actual.getPhotoUrls();
         softAssertions.assertThat(actualPhotoUrls).as("PhotoUrls").isEqualTo(photooUrls);
-
+        return this;
 
     }
 
-    public void hasListOfTagsItems(List<TagsItemsModel> tagsItemsModelList) {
+    public PetAssert hasListOfTagsItems(List<TagsItemsModel> tagsItemsModelList) {
 
 
         List<TagsItemsModel> actualTagsItemsList = actual.getTagsItems();
         for (int i = 0; i < actualTagsItemsList.size(); i++) {
             TagsItemsAssert.assertThat(actualTagsItemsList.get(i)).isEqualTo(tagsItemsModelList.get(i));
         }
+        return this;
     }
 
 
-    public void hasStatus(String status) {
+    public PetAssert hasStatus(String status) {
         String actualStatus = actual.getStatus();
         softAssertions.assertThat(actualStatus).as("Status").isEqualTo(status);
-
+        return this;
     }
 
 
