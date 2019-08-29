@@ -1,67 +1,67 @@
 package io.swagger.petstore;
 
-import asertions.petAssertions.PetAssert;
-import business.petBL.PetCreateBL;
-import business.petBL.PetUpdateBL;
-import client.pet.PetServices;
-import io.restassured.response.Response;
+import builders.FailPetCreateBuilders;
+import builders.PetCreateBuilders;
+import business.PetBL;
+import clients.PetClients;
+import failModels.PetFailModel;
 import models.PetModel;
-import org.assertj.core.api.SoftAssertions;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
+
+public class PetStoreTest extends PetClients {
 
 
-public class PetStoreTest extends PetServices {
-    private static PetModel testPetOne;
-    private PetModel testPetTwo;
+    private PetModel testPetOne;
+    private PetBL petBL;
 
 
-    @BeforeSuite
-    public static void setUp() {
-        System.out.println("Before all");
-        testPetOne = new PetCreateBL().createPet();
-    }
-
-    @Test(priority = 1)
-    public void addNewPetTest() {
-        Response response = addNewPet(testPetOne);
-        PetModel newPet = new PetCreateBL().createPet();
-        PetAssert.assertThat(response.getBody().as(PetModel.class)).isEqualTo(newPet);
+    @BeforeClass
+    public void setUp() {
+        testPetOne = new PetCreateBuilders().createPet();
+        petBL = new PetBL();
 
     }
 
-    @Test(priority = 2)
-    public void getPetTest() {
-        Response response = getPetByID(testPetOne.getId());
-        assertEquals(200, response.getStatusCode());
-    }
-
-    @Test(priority = 5)
-    public void getPetByStatusTest() {
-        Response response = getPetByStatus(PetModel.Status.PENDING.getValue());
-        assertEquals(200, response.getStatusCode());
+    @Test
+    public void petTest() {
+        petBL.addPetTest(testPetOne);
+        petBL.getPetByValidIDTest(testPetOne);
+        petBL.updatePetTest(testPetOne);
+        petBL.deletePresentPetTest(testPetOne);
+        petBL.getPetByInvalIDTest(testPetOne);
 
     }
-
-    @Test(priority = 3)
-    public void updatePetTest() {
-        System.out.println(" updatePetTest");
-        testPetTwo = new PetUpdateBL().doUpdate(testPetOne.getId());
-        Response response = updatePet(testPetTwo);
-        PetAssert.assertThat(response.getBody().as(PetModel.class))
-                .hasId(testPetTwo.getId())
-                .hasCategory(testPetTwo.getCategory());
-
+    @Test
+    public void uploadImage() {
+        petBL.uploadImageTest(testPetOne);
     }
 
-    @Test(priority = 4)
-    public void deletePetTest() {
-        System.out.println(" deletePetTest");
-        Response response = deletePet(testPetOne.getId());
-        assertEquals(200, response.getStatusCode());
+
+
+    @Test
+    public void getInvalidPet() {
+        petBL.getPetByInvalIDTest(testPetOne);
     }
+
+    @Test//(expectedExceptions = AssertionError.class)//?
+    public void deleteNotPresentPet() {
+        petBL.deleteNotPresentPet(testPetOne);
+    }
+
+
+    @Test
+    public void addPetWithInvalidData() {
+        PetFailModel petFailModel = new FailPetCreateBuilders().createFailPet();
+        petBL.addPetWithInvalidDataTest(petFailModel);
+    }
+
+    @Test
+    public void getPetByStatus() {
+        petBL.getPetByStatusTest("sold");
+    }
+
 }
 
 
